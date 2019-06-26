@@ -1,1 +1,8 @@
-# sione-api
+# SIONE API
+
+
+# STACK
+
+- Node
+- Express
+- Mongodb
