@@ -1,0 +1,55 @@
+{
+	"name": "sione-api",
+	"version": "0.0.1",
+	"description": "Api for Sione App",
+	"main": "index.js",
+	"scripts": {
+		"build": "babel src -d dist",
+		"start": "nodemon src/index.js --exec babel-node",
+		"test": "npm run test"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/filiperethink/sione-api.git"
+	},
+	"author": "Filipe Prado",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/filiperethink/sione-api/issues"
+	},
+	"homepage": "https://github.com/filiperethink/sione-api#readme",
+	"dependencies": {
+		"bcrypt-nodejs": "0.0.3",
+		"body-parser": "^1.19.0",
+		"chalk": "^2.4.2",
+		"compression": "^1.7.4",
+		"cors": "^2.8.5",
+		"cross-env": "^5.2.0",
+		"dotenv": "^8.0.0",
+		"express": "^4.17.1",
+		"express-status-monitor": "^1.2.6",
+		"express-validation": "^1.0.2",
+		"helmet": "^3.18.0",
+		"http-status": "^1.3.2",
+		"joi": "^14.3.1",
+		"jsonwebtoken": "^8.5.1",
+		"mongoose": "^5.6.1",
+		"mongoose-unique-validator": "^2.0.3",
+		"morgan": "^1.9.1",
+		"nodemon": "^1.19.1",
+		"passport": "^0.4.0",
+		"passport-jwt": "^4.0.0",
+		"passport-local": "^1.0.0",
+		"yup": "^0.27.0"
+	},
+	"devDependencies": {
+		"@babel/cli": "^7.4.4",
+		"@babel/core": "^7.4.5",
+		"@babel/node": "^7.4.5",
+		"@babel/preset-env": "^7.4.5",
+		"eslint": "^5.16.0",
+		"eslint-config-airbnb-base": "^13.1.0",
+		"eslint-plugin-import": "^2.18.0",
+		"prettier": "1.18.2"
+	}
+}
