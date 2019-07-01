@@ -14,6 +14,7 @@ mongoose.Promise = global.Promise;
 // If debug run the mongoose debug options
 mongoose.set('debug', CONSTANTS.MONGOOSE_DEBUG);
 mongoose.set('useCreateIndex', true);
+mongoose.set('useFindAndModify', false);
 // Connect the db with the url provide
 // Connect the db with the url provide
 try {

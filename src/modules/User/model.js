@@ -1,3 +1,4 @@
+/* eslint-disable func-names */
 /* eslint-disable import/no-mutable-exports */
 
 import mongoose, { Schema } from 'mongoose';
@@ -29,7 +30,6 @@ const UserSchema = new Schema(
     lastName: {
       type: String,
       trim: true,
-      unique: true,
     },
     password: {
       type: String,
@@ -68,7 +68,7 @@ UserSchema.methods = {
   toAuthJSON() {
     return {
       _id: this._id,
-      token: `JWT ${this.createToken()}`,
+      token: `${this.createToken()}`,
     };
   },
 
@@ -84,12 +84,15 @@ UserSchema.methods = {
   toJSON() {
     return {
       _id: this._id,
-      username: this.username,
+      firstName: this.firstName,
+      lastName: this.lastName,
+      email: this.email,
     };
   },
 
   authenticateUser(password) {
-    return compareSync(password, this.password);
+    const isAuth = compareSync(password, this.password);
+    return isAuth;
   },
 };
 

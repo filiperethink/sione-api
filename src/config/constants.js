@@ -7,3 +7,10 @@ export default {
   NODE_ENV: process.env.NODE_ENV,
   PORT: process.env.PORT,
 };
+
+export const WHITELIST = {
+  users: {
+    create: ['email', 'firstName', 'lastName', 'password'],
+    update: ['email', 'firstName', 'lastName', 'password'],
+  },
+};

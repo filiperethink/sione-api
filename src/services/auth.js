@@ -8,12 +8,15 @@ const localOpts = {
   usernameField: 'email',
 };
 
-const localStrategy = new LocalStrategy(localOpts, async (email, password, done) => {
+const localLogin = new LocalStrategy(localOpts, async (email, password, done) => {
   try {
     const user = await User.findOne({ email });
+
     if (!user) {
       return done(null, false);
-    } if (!user.authenticateUser(password)) {
+    }
+
+    if (!user.authenticateUser(password)) {
       return done(null, false);
     }
 
@@ -42,7 +45,7 @@ const jwtStrategy = new JWTStrategy(jwtOpts, async (payload, done) => {
   }
 });
 
-passport.use(localStrategy);
+passport.use(localLogin);
 passport.use(jwtStrategy);
 
 export const authLocal = passport.authenticate('local', { session: false });

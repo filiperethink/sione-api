@@ -1,5 +1,6 @@
 import HTTPStatus from 'http-status';
 import Joi from 'joi';
+import User from '../User/model';
 
 export const validation = {
   login: {
@@ -14,8 +15,8 @@ export const validation = {
   },
 };
 
-export function login(req, res, next) {
+export const login = async (req, res, next) => {
   res.status(HTTPStatus.OK).json(req.user.toAuthJSON());
 
   return next();
-}
+};
