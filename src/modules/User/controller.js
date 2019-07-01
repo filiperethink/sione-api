@@ -13,7 +13,7 @@ export const validation = {
       password: Joi.string()
         .min(6)
         .regex(/^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/)
-        .required(),
+        .required('Is Required'),
       firstName: Joi.string()
         .min(3)
         .max(20)
@@ -68,16 +68,41 @@ export const update = async (req, res, next) => {
       return res.status(HTTPStatus.UNAUTHORIZED).json({ message: HTTPStatus['401_NAME'] });
     }
 
-    const newPassword = user._hashPassword(body.password);
-    const updatedUser = {
-      ...body,
-      password: newPassword,
-    };
+    let updatedUser;
 
-    console.log({ updatedUser });
-
+    if (body.password) {
+      updatedUser = {
+        ...body,
+        password: user._hashPassword(body.password),
+      };
+    } else {
+      updatedUser = {
+        ...body,
+      };
+    }
     const upUser = await User.findByIdAndUpdate(id, updatedUser, { new: true });
-    return res.status(HTTPStatus.OK).json({ upUser });
+    return res.status(HTTPStatus.OK).json({ user: upUser });
+  } catch (error) {
+    error.status = HTTPStatus.BAD_REQUEST;
+    return next(error);
+  }
+};
+
+export const deleteUser = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (id.match(/^[0-9a-fA-F]{24}$/)) {
+      const user = await User.findById({ _id: id });
+      if (!user) {
+        return res.status(HTTPStatus.BAD_REQUEST).json({ message: 'User not found.' });
+      }
+      if (req.user._id.toString() !== id) {
+        return res.status(HTTPStatus.UNAUTHORIZED).json({ message: HTTPStatus['401_NAME'] });
+      }
+      await user.remove({ session: false });
+      return res.status(HTTPStatus.OK).json({ message: 'Account successfully deleted' });
+    }
+    return res.status(HTTPStatus.BAD_REQUEST).json({ message: 'User not found' });
   } catch (error) {
     error.status = HTTPStatus.BAD_REQUEST;
     return next(error);

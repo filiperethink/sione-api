@@ -13,4 +13,7 @@ export const WHITELIST = {
     create: ['email', 'firstName', 'lastName', 'password'],
     update: ['email', 'firstName', 'lastName', 'password'],
   },
+  auth: {
+    login: ['email', 'password'],
+  },
 };

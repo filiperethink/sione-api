@@ -1,6 +1,7 @@
 import passport from 'passport';
 import LocalStrategy from 'passport-local';
 import { Strategy as JWTStrategy, ExtractJwt } from 'passport-jwt';
+import HTTPStatus from 'http-status';
 import User from '../modules/User/model';
 import constants from '../config/constants';
 
@@ -8,12 +9,12 @@ const localOpts = {
   usernameField: 'email',
 };
 
-const localLogin = new LocalStrategy(localOpts, async (email, password, done) => {
+const localLogin = new LocalStrategy(localOpts, async (email, password, res, done) => {
   try {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return done(null, false);
+      return res.status(HTTPStatus.BAD_REQUEST).json({ message: 'Email does not exists' });
     }
 
     if (!user.authenticateUser(password)) {

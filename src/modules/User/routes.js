@@ -7,5 +7,6 @@ const routes = new Router();
 
 routes.post('/user', validate(UserController.validation.create), UserController.store);
 routes.put('/user/:id', authJwt, validate(UserController.validation.update), UserController.update);
+routes.delete('/user/:id', authJwt, UserController.deleteUser);
 
 export default routes;
