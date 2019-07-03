@@ -10,8 +10,11 @@ export default {
 
 export const WHITELIST = {
   users: {
-    create: ['email', 'firstName', 'lastName', 'password'],
-    update: ['email', 'firstName', 'lastName', 'password'],
+    create: ['email', 'firstName', 'lastName', 'password', 'role'],
+    update: ['email', 'firstName', 'lastName', 'password', 'role'],
+  },
+  peladas: {
+    create: ['name', 'players', 'seasonSize', 'matchDuration', 'scoreLimit', 'teamSize'],
   },
   auth: {
     login: ['email', 'password'],

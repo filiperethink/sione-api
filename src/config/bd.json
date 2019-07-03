@@ -1,0 +1,144 @@
+{
+  "user": {
+    "id": "UUID",
+    "firstName": "String",
+    "lastName": "String",
+    "email": "String",
+    "pro": "Boolean",
+    "password": "String"
+  },
+  "pelada": {
+    "id": "UUID",
+    "name": "String",
+    "owner": "ObjectId",
+    "peladas": [
+      "ObjectId"
+    ]
+  },
+  "player": {
+    "id": "UUID",
+    "firstName": "String",
+    "lastName": "String",
+    "email": "String",
+    "emailAssociated": "Boolean"
+  },
+  {
+    "user": {
+      "_id": "id123",
+      "firstName": "Filipe",
+      "lastName": "Prado",
+      "email": "filipe@email.com",
+      "password": "senha123",
+      "pro": true,
+      "admin_pelada": [
+        "idPelada1"
+      ]
+    }
+  }
+  // Criar Pelada se usuario for pro
+  {
+    "pelada": {
+      "_id": "idPelada1",
+      "name": "Pelada da Faculdade",
+      "configs": {
+        "seasonSize": 8,
+        "matchDuration": 7,
+        "scoreLimit": 2,
+        "teamSize": 5
+      },
+      "owner": {
+        "_id": "5d1a612a6b8fcf0e0269f212",
+        "firstName": "John",
+        "lastName": "Doe",
+        "email": "jd@email.com"
+      },
+      "players": [
+        {
+          "_id": "5d1a61796b8fcf0e0269f213",
+          "firstName": "Filipe",
+          "lastName": "Prado",
+          "email": "filipe@email.com",
+          "isAdmin": true,
+        },
+        {
+          "_id": "5d1a6e7f8a471e1e305b998a",
+          "firstName": "Arthur",
+          "lastName": "Vargas",
+          "email": "arthur@email.com",
+          "isAdmin": false,
+        }
+      ],
+    }
+  }
+
+
+"gamedays": [
+    {
+      "peladaId": "idPelada1",
+      "_id": "1312837219",
+      "date": "2019-01-01",
+      "hour": "19:00",
+      "status": "finished",
+      "presentPlayers": [
+        "33213",
+        "sd9sa8ddh"
+      ],
+      "totalGols": [
+        "12323",
+        "12323",
+        "WQEQWEQWE"
+      ],
+      "totalAssists": [
+        "123231",
+        "ASDASDASD"
+      ],
+      "matches": [
+        {
+          "_id": "saqh312",
+          "team1": {
+            "players": [
+              "12323",
+              "123231"
+            ],
+            "gols": [
+              "12323",
+              "12323"
+            ],
+            "assist": [
+              "123231"
+            ]
+          },
+          "team2": {
+            "players": [
+              "ASDASDASD",
+              "WQEQWEQWE"
+            ],
+            "gols": [
+              "WQEQWEQWE"
+            ],
+            "assist": [
+              "ASDASDASD"
+            ]
+          },
+        }
+      ]
+    },
+  ]
+
+"seasons": [
+    {
+      "_id": "1273213hjk",
+      "peladaId": "id_dos_primos",
+      "name": "Temporada Atual",
+      "duration": 8,
+      "played": 1,
+      "resume": {
+        "gols": 50,
+        "assist": 30,
+        "artilheiro": "idPlayer123",
+        "garçom": "idPlayer321",
+        "pereba": "idPlayer5566",
+        "fominha": "idPlayer444"
+      },
+    }
+  ],

@@ -2,13 +2,13 @@ import express from 'express';
 import chalk from 'chalk';
 import { middlewareConfig, CONSTANTS } from './config';
 import './config/db';
-import { AuthRoutes, UserRoutes } from './modules';
+import { AuthRoutes, UserRoutes, PeladaRoutes } from './modules';
 
 const app = express();
 
 middlewareConfig(app);
 
-app.use('/api', [AuthRoutes, UserRoutes]);
+app.use('/api', [AuthRoutes, UserRoutes, PeladaRoutes]);
 
 if (!module.parent) {
   app.listen(CONSTANTS.PORT, (err) => {

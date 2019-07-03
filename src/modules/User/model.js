@@ -31,6 +31,11 @@ const UserSchema = new Schema(
       type: String,
       trim: true,
     },
+    isPro: {
+      type: Schema.Types.Boolean,
+      default: false,
+      required: true,
+    },
     password: {
       type: String,
       required: [true, 'Password is required!'],

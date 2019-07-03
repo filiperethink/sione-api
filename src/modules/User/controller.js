@@ -22,6 +22,9 @@ export const validation = {
         .min(3)
         .max(20)
         .required(),
+      role: Joi.string()
+        .valid('admin', 'normal')
+        .default('normal'),
     },
   },
   update: {
@@ -36,8 +39,21 @@ export const validation = {
       lastName: Joi.string()
         .min(3)
         .max(20),
+      role: Joi.string().valid('admin', 'normal'),
     },
   },
+};
+
+export const getAll = async (req, res, next) => {
+  try {
+    const users = await User.find();
+    console.log({ users });
+
+    return res.status(HTTPStatus.OK).json({ users });
+  } catch (error) {
+    error.status = HTTPStatus.BAD_REQUEST;
+    return next(error);
+  }
 };
 
 export const store = async (req, res, next) => {
