@@ -14,7 +14,7 @@ const PeladaSchema = new Schema(
       min: [3, 'Min character is 3'],
       unique: [true, 'Name need to be Unique!'],
     },
-    owner: {
+    owner_id: {
       type: Schema.Types.ObjectId,
       required: true,
       ref: 'User',

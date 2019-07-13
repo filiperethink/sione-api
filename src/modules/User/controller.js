@@ -3,6 +3,7 @@ import HTTPStatus from 'http-status';
 import User from './model';
 import { WHITELIST } from '../../config/constants';
 import { filteredBody } from '../../utils';
+import { API_MESSAGES } from '../../config/api-messages';
 
 export const validation = {
   create: {
@@ -44,45 +45,43 @@ export const validation = {
   },
 };
 
-export const getAll = async (req, res, next) => {
+// GET ALL USERS
+export const getAll = async (req, res) => {
   try {
     const users = await User.find({}).populate();
-    return res.status(HTTPStatus.OK).json(users);
+    return res.status(HTTPStatus.OK).json({ message: API_MESSAGES.users.getAll.success, users });
   } catch (error) {
-    error.status = HTTPStatus.BAD_REQUEST;
-    return next(error);
+    return res.status(HTTPStatus.BAD_REQUEST).json({ message: API_MESSAGES.users.getAll.error });
   }
 };
 
-export const getUserById = async (req, res, next) => {
+// GET USER BY ID
+export const getUserById = async (req, res) => {
   const { id } = req.params;
   try {
     const user = await User.find({ _id: id });
     if (!user) {
-      return res.status(HTTPStatus.BAD_REQUEST).json({ message: 'User not found.' });
+      return res.status(HTTPStatus.BAD_REQUEST).json({ message: API_MESSAGES.generic.notFound });
     }
-    if (req.user._id.toString() !== id) {
-      return res.status(HTTPStatus.UNAUTHORIZED).json({ message: HTTPStatus['401_NAME'] });
-    }
-    return res.status(HTTPStatus.OK).json(user);
+    return res.status(HTTPStatus.OK).json({ message: API_MESSAGES.users.getById.success, user });
   } catch (error) {
-    error.status = HTTPStatus.BAD_REQUEST;
-    return next(error);
+    return res.status(HTTPStatus.BAD_REQUEST).json({ message: API_MESSAGES.users.getById.error });
   }
 };
 
-export const store = async (req, res, next) => {
+// CREATE USER
+export const store = async (req, res) => {
   const body = filteredBody(req.body, WHITELIST.users.create);
   try {
     const user = await User.create(body);
     return res.status(HTTPStatus.CREATED).json(user.toAuthJSON());
   } catch (error) {
-    error.status = HTTPStatus.BAD_REQUEST;
-    return next(error);
+    return res.status(HTTPStatus.BAD_REQUEST).json({ message: API_MESSAGES.users.create.error });
   }
 };
 
-export const update = async (req, res, next) => {
+// UPDATE USER
+export const update = async (req, res) => {
   const { id } = req.params;
   const body = filteredBody(req.body, WHITELIST.users.update);
   const isEmpt = Object.entries(body).length === 0;
@@ -90,13 +89,15 @@ export const update = async (req, res, next) => {
   try {
     const user = await User.findById(id);
     if (!user) {
-      return res.status(HTTPStatus.BAD_REQUEST).json({ message: 'User not found.' });
+      return res.status(HTTPStatus.BAD_REQUEST).json({ message: API_MESSAGES.generic.notFound });
     }
     if (isEmpt) {
-      return res.status(HTTPStatus.NOT_MODIFIED);
+      return res
+        .status(HTTPStatus.NOT_MODIFIED)
+        .json({ message: API_MESSAGES.generic.nothingToUpdate });
     }
     if (req.user._id.toString() !== id) {
-      return res.status(HTTPStatus.UNAUTHORIZED).json({ message: HTTPStatus['401_NAME'] });
+      return res.status(HTTPStatus.UNAUTHORIZED).json({ message: API_MESSAGES.auth.unAuthorized });
     }
 
     let updatedUser;
@@ -112,30 +113,33 @@ export const update = async (req, res, next) => {
       };
     }
     const upUser = await User.findByIdAndUpdate(id, updatedUser, { new: true });
-    return res.status(HTTPStatus.OK).json({ user: upUser });
+    return res
+      .status(HTTPStatus.OK)
+      .json({ message: API_MESSAGES.users.update.success, user: upUser });
   } catch (error) {
-    error.status = HTTPStatus.BAD_REQUEST;
-    return next(error);
+    return res.status(HTTPStatus.BAD_REQUEST).json({ message: API_MESSAGES.users.update.error });
   }
 };
 
-export const deleteUser = async (req, res, next) => {
+// DELETE USER
+export const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
     if (id.match(/^[0-9a-fA-F]{24}$/)) {
       const user = await User.findById({ _id: id });
       if (!user) {
-        return res.status(HTTPStatus.BAD_REQUEST).json({ message: 'User not found.' });
+        return res.status(HTTPStatus.BAD_REQUEST).json({ message: API_MESSAGES.generic.notFound });
       }
       if (req.user._id.toString() !== id) {
-        return res.status(HTTPStatus.UNAUTHORIZED).json({ message: HTTPStatus['401_NAME'] });
+        return res
+          .status(HTTPStatus.UNAUTHORIZED)
+          .json({ message: API_MESSAGES.auth.unAuthorized });
       }
       await user.remove({ session: false });
-      return res.status(HTTPStatus.OK).json({ message: 'Account successfully deleted' });
+      return res.status(HTTPStatus.OK).json({ message: API_MESSAGES.users.remove.success });
     }
-    return res.status(HTTPStatus.BAD_REQUEST).json({ message: 'User not found' });
+    return res.status(HTTPStatus.BAD_REQUEST).json({ message: API_MESSAGES.users.remove.error });
   } catch (error) {
-    error.status = HTTPStatus.BAD_REQUEST;
-    return next(error);
+    return res.status(HTTPStatus.BAD_REQUEST).json({ message: API_MESSAGES.users.remove.error });
   }
 };

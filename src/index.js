@@ -1,5 +1,7 @@
 import express from 'express';
+
 import chalk from 'chalk';
+
 import { middlewareConfig, CONSTANTS } from './config';
 import './config/db';
 import { AuthRoutes, UserRoutes, PeladaRoutes } from './modules';

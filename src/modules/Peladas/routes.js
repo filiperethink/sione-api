@@ -6,12 +6,19 @@ import * as PeladaController from './controller';
 const routes = new Router();
 
 routes.post(
-  '/pelada',
+  '/peladas',
   authJwt,
   validate(PeladaController.validation.create),
   PeladaController.store,
 );
-routes.get('/pelada/:id', authJwt, PeladaController.getById);
+routes.put(
+  '/peladas/:id',
+  authJwt,
+  validate(PeladaController.validation.update),
+  PeladaController.update,
+);
+routes.get('/peladas/:id', authJwt, PeladaController.getById);
+routes.get('/pelada', authJwt, PeladaController.getPeladaByUserId);
 routes.get('/peladas', authJwt, PeladaController.getAll);
-routes.delete('/pelada/:id', authJwt, PeladaController.deleteById);
+routes.delete('/peladas/:id', authJwt, PeladaController.deleteById);
 export default routes;
