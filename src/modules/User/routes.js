@@ -6,8 +6,14 @@ import * as UserController from './controller';
 const routes = new Router();
 
 routes.get('/users', authJwt, UserController.getAll);
-routes.post('/user', validate(UserController.validation.create), UserController.store);
-routes.put('/user/:id', authJwt, validate(UserController.validation.update), UserController.update);
-routes.delete('/user/:id', authJwt, UserController.deleteUser);
+routes.get('/users/:id', authJwt, UserController.getUserById);
+routes.post('/users', validate(UserController.validation.create), UserController.store);
+routes.put(
+  '/users/:id',
+  authJwt,
+  validate(UserController.validation.update),
+  UserController.update,
+);
+routes.delete('/users/:id', authJwt, UserController.deleteUser);
 
 export default routes;

@@ -22,9 +22,8 @@ export const validation = {
         .min(3)
         .max(20)
         .required(),
-      role: Joi.string()
-        .valid('admin', 'normal')
-        .default('normal'),
+      admin_pelada: Joi.array(),
+      pro: Joi.boolean().default(false),
     },
   },
   update: {
@@ -39,17 +38,33 @@ export const validation = {
       lastName: Joi.string()
         .min(3)
         .max(20),
-      role: Joi.string().valid('admin', 'normal'),
+      admin_pelada: Joi.array(),
+      pro: Joi.boolean().default(false),
     },
   },
 };
 
 export const getAll = async (req, res, next) => {
   try {
-    const users = await User.find();
-    console.log({ users });
+    const users = await User.find({}).populate();
+    return res.status(HTTPStatus.OK).json(users);
+  } catch (error) {
+    error.status = HTTPStatus.BAD_REQUEST;
+    return next(error);
+  }
+};
 
-    return res.status(HTTPStatus.OK).json({ users });
+export const getUserById = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const user = await User.find({ _id: id });
+    if (!user) {
+      return res.status(HTTPStatus.BAD_REQUEST).json({ message: 'User not found.' });
+    }
+    if (req.user._id.toString() !== id) {
+      return res.status(HTTPStatus.UNAUTHORIZED).json({ message: HTTPStatus['401_NAME'] });
+    }
+    return res.status(HTTPStatus.OK).json(user);
   } catch (error) {
     error.status = HTTPStatus.BAD_REQUEST;
     return next(error);

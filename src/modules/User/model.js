@@ -11,7 +11,7 @@ import CONSTANTS from '../../config/constants';
 const UserSchema = new Schema(
   {
     email: {
-      type: String,
+      type: Schema.Types.String,
       unique: true,
       required: [true, 'Email is required!'],
       trim: true,
@@ -24,20 +24,25 @@ const UserSchema = new Schema(
       },
     },
     firstName: {
-      type: String,
+      type: Schema.Types.String,
       trim: true,
     },
     lastName: {
-      type: String,
+      type: Schema.Types.String,
       trim: true,
     },
-    isPro: {
+    admin_pelada: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Pelada',
+      },
+    ],
+    pro: {
       type: Schema.Types.Boolean,
       default: false,
-      required: true,
     },
     password: {
-      type: String,
+      type: Schema.Types.String,
       required: [true, 'Password is required!'],
       trim: true,
       minlength: [6, 'Password need to be longer!'],
@@ -92,6 +97,8 @@ UserSchema.methods = {
       firstName: this.firstName,
       lastName: this.lastName,
       email: this.email,
+      pro: this.pro,
+      admin_pelada: this.admin_pelada,
     };
   },
 
