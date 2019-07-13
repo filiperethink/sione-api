@@ -2,16 +2,30 @@ import Joi from 'joi';
 import HTTPStatus from 'http-status';
 import Pelada from './model';
 import { WHITELIST } from '../../config/constants';
-import { filteredBody } from '../../utils';
+import { filteredBody, formatPeladaData } from '../../utils';
+import { API_MESSAGES } from '../../config/api-messages';
 
 export const validation = {
   create: {
     body: {
       name: Joi.string()
-        .max(15)
+        .max(18)
         .min(3)
         .required(),
       players: Joi.array(),
+    },
+  },
+  update: {
+    body: {
+      name: Joi.string()
+        .max(18)
+        .min(3)
+        .error(new Error('Was REALLY expecting a string')),
+      players: Joi.array(),
+      seasonSize: Joi.number(),
+      matchDuration: Joi.number(),
+      scoreLimit: Joi.number(),
+      teamSize: Joi.number(),
     },
   },
 };
@@ -19,109 +33,126 @@ export const validation = {
 export const store = async (req, res) => {
   const body = filteredBody(req.body, WHITELIST.peladas.create);
   const { _id } = req.user;
+
+  // SET OWNERID
   const newPelada = {
     ...body,
-    owner: _id.toString(),
+    players: [...body.players, _id],
+    owner_id: _id.toString(),
   };
+
   try {
     const pelada = await Pelada.create(newPelada);
-    const formatedPelada = {
-      id: pelada._id,
-      name: pelada.name,
-      owner: pelada.owner,
-      players: pelada.players,
-      configs: {
-        seasonSize: pelada.seasonSize,
-        matchDuration: pelada.matchDuration,
-        scoreLimit: pelada.scoreLimit,
-        teamSize: pelada.teamSize,
-      },
-    };
+    const formatedPelada = formatPeladaData(pelada);
     return res
       .status(HTTPStatus.CREATED)
-      .json({ message: 'Pelada succefully create', pelada: formatedPelada });
+      .json({ message: API_MESSAGES.peladas.create.success, pelada: formatedPelada });
   } catch (error) {
     if (error.errors.name.kind) {
-      return res.status(HTTPStatus.BAD_REQUEST).json({ message: 'Pelada name is already taken' });
+      return res
+        .status(HTTPStatus.BAD_REQUEST)
+        .json({ message: API_MESSAGES.peladas.create.error.nameTaken });
     }
-    return res.status(HTTPStatus.BAD_REQUEST);
+    return res.status(HTTPStatus.BAD_REQUEST).json({ message: API_MESSAGES.generic.error });
   }
 };
 
-export const getAll = async (req, res, next) => {
+export const getAll = async (req, res) => {
   try {
-    const peladas = await Pelada.find({})
-      .populate('players')
-      .populate('owner');
-
-    const formatedPeladas = peladas.map(pelada => ({
-      id: pelada._id,
-      name: pelada.name,
-      owner: pelada.owner,
-      players: pelada.players,
-      configs: {
-        seasonSize: pelada.seasonSize,
-        matchDuration: pelada.matchDuration,
-        scoreLimit: pelada.scoreLimit,
-        teamSize: pelada.teamSize,
-      },
-    }));
-    return res.status(HTTPStatus.CREATED).json({ peladas: formatedPeladas });
+    const peladas = await Pelada.find({}).populate('players');
+    const formatedPeladas = peladas.map(pelada => formatPeladaData(pelada));
+    return res
+      .status(HTTPStatus.OK)
+      .json({ message: API_MESSAGES.peladas.getAll.success, peladas: formatedPeladas });
   } catch (error) {
-    error.status = HTTPStatus.BAD_REQUEST;
-    return next(error);
+    return res.status(HTTPStatus.BAD_REQUEST).json({ message: API_MESSAGES.peladas.getAll.error });
   }
 };
 
-export const getById = async (req, res, next) => {
+// GET PELADA BY PELADA_ID
+export const getById = async (req, res) => {
   const { id } = req.params;
   try {
-    const peladas = await Pelada.findOne({ _id: id })
+    const pelada = await Pelada.findOne({ _id: id })
       .populate('players')
       .populate('owner');
 
-    const formatedPelada = {
-      id: peladas._id,
-      name: peladas.name,
-      owner: peladas.owner,
-      players: peladas.players,
-      configs: {
-        seasonSize: peladas.seasonSize,
-        matchDuration: peladas.matchDuration,
-        scoreLimit: peladas.scoreLimit,
-        teamSize: peladas.teamSize,
-      },
-    };
-    return res.status(HTTPStatus.CREATED).json({ pelada: formatedPelada });
+    if (!pelada) {
+      return res.status(HTTPStatus.BAD_REQUEST).json({ message: API_MESSAGES.generic.notFound });
+    }
+    const formatedPelada = formatPeladaData(pelada);
+    return res
+      .status(HTTPStatus.OK)
+      .json({ message: API_MESSAGES.peladas.getById.success, pelada: formatedPelada });
+  } catch (error) {
+    return res.status(HTTPStatus.BAD_REQUEST).json({ message: API_MESSAGES.peladas.getById.error });
+  }
+};
+
+// GET PELADA BY USER_ID
+export const getPeladaByUserId = async (req, res, next) => {
+  const { _id } = req.user;
+  try {
+    const peladas = await Pelada.find({ owner_id: _id }).populate('players');
+    const formatedPeladas = peladas.map(pelada => formatPeladaData(pelada));
+    return res.status(HTTPStatus.CREATED).json({ pelada: formatedPeladas });
   } catch (error) {
     error.status = HTTPStatus.BAD_REQUEST;
     return next(error);
   }
 };
 
-export const deleteById = async (req, res, next) => {
+// UPDATE PELADA BY PELADA_ID
+export const update = async (req, res) => {
+  const { id } = req.params;
+  const body = filteredBody(req.body, WHITELIST.peladas.update);
+  const isEmpt = Object.entries(body).length === 0;
+  try {
+    const pelada = await Pelada.find({ _id: id }).where({ owner_id: req.user._id });
+    if (!pelada) {
+      return res.status(HTTPStatus.BAD_REQUEST).json({ message: API_MESSAGES.generic.notFound });
+    }
+    if (isEmpt) {
+      return res
+        .status(HTTPStatus.NOT_MODIFIED)
+        .json({ message: API_MESSAGES.generic.nothingToUpdate });
+    }
+    const updatedPelada = {
+      ...body,
+    };
+
+    const upPelada = await Pelada.findByIdAndUpdate(id, updatedPelada, { new: true }).populate(
+      'players',
+    );
+
+    const formatedPelada = formatPeladaData(upPelada);
+
+    return res
+      .status(HTTPStatus.OK)
+      .json({ message: API_MESSAGES.peladas.update.success, pelada: formatedPelada });
+  } catch (error) {
+    return res.status(HTTPStatus.BAD_REQUEST).json({ message: API_MESSAGES.peladas.update.error });
+  }
+};
+// DELETE PELADA BY ID
+export const deleteById = async (req, res) => {
   try {
     const { id } = req.params;
     if (id.match(/^[0-9a-fA-F]{24}$/)) {
       const pelada = await Pelada.findById({ _id: id });
       if (!pelada) {
-        return res
-          .status(HTTPStatus.BAD_REQUEST)
-          .json({ message: 'Pelada not found.', status: false });
+        return res.status(HTTPStatus.BAD_REQUEST).json({ message: API_MESSAGES.generic.notFound });
       }
-      if (req.user._id.toString() !== pelada.owner.toString()) {
+      if (req.user._id.toString() !== pelada.owner_id.toString()) {
         return res
           .status(HTTPStatus.UNAUTHORIZED)
-          .json({ message: HTTPStatus['401_NAME'], status: false });
+          .json({ message: API_MESSAGES.auth.unAuthorized });
       }
       await pelada.remove();
-      return res
-        .status(HTTPStatus.OK)
-        .json({ message: 'Pelada successfully deleted', status: true });
+      return res.status(HTTPStatus.OK).json({ message: API_MESSAGES.peladas.remove.success });
     }
-    return res.status(HTTPStatus.BAD_REQUEST).json({ message: 'Pelada not found' });
+    return res.status(HTTPStatus.BAD_REQUEST).json({ message: API_MESSAGES.generic.notFound });
   } catch (error) {
-    error.status = HTTPStatus.BAD_REQUEST;
-    return next(error);
+    return res.status(HTTPStatus.BAD_REQUEST).json({ message: API_MESSAGES.peladas.remove.error });
   }
 };

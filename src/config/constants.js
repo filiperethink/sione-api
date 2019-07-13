@@ -15,6 +15,7 @@ export const WHITELIST = {
   },
   peladas: {
     create: ['name', 'players', 'seasonSize', 'matchDuration', 'scoreLimit', 'teamSize'],
+    update: ['name', 'players', 'seasonSize', 'matchDuration', 'scoreLimit', 'teamSize'],
   },
   auth: {
     login: ['email', 'password'],

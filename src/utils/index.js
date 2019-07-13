@@ -1,13 +1,4 @@
-/**
- * Filtered the request body for be sure
- * nothing wrong can be pass.
- *
- * @export
- * @param {Object} body - Request body
- * @param {Array[String]} whitelist - Element who want to whitelist
- * @returns {Object} body - Request body filtered
- */
-
+// Filter Body
 export function filteredBody(body, whitelist) {
   const items = {};
 
@@ -19,3 +10,18 @@ export function filteredBody(body, whitelist) {
 
   return items;
 }
+
+// Format Pelada Data
+
+export const formatPeladaData = data => ({
+  id: data._id,
+  name: data.name,
+  owner_id: data.owner_id,
+  players: data.players,
+  configs: {
+    seasonSize: data.seasonSize,
+    matchDuration: data.matchDuration,
+    scoreLimit: data.scoreLimit,
+    teamSize: data.teamSize,
+  },
+});
