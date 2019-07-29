@@ -71,10 +71,12 @@ export const getUserById = async (req, res) => {
 
 // CREATE USER
 export const store = async (req, res) => {
+  console.log('BODY', req.body);
+
   const body = filteredBody(req.body, WHITELIST.users.create);
   try {
-    const user = await User.create(body);
-    return res.status(HTTPStatus.CREATED).json(user.toAuthJSON());
+    await User.create(body);
+    return res.status(HTTPStatus.CREATED).json({ success: true });
   } catch (error) {
     return res.status(HTTPStatus.BAD_REQUEST).json({ message: API_MESSAGES.users.create.error });
   }

@@ -17,6 +17,9 @@ export const WHITELIST = {
     create: ['name', 'players', 'seasonSize', 'matchDuration', 'scoreLimit', 'teamSize'],
     update: ['name', 'players', 'seasonSize', 'matchDuration', 'scoreLimit', 'teamSize'],
   },
+  gameday: {
+    create: ['pelada_id', 'date', 'hour', 'presentPlayers', 'totalGols', 'totalAssists', 'matches'],
+  },
   auth: {
     login: ['email', 'password'],
   },
